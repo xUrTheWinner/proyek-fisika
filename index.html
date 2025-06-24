@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animasi Perhitungan GLB dan GLBB</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #4a5568;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            padding: 25px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            border-left: 5px solid #667eea;
+        }
+
+        .section h2 {
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .theory {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            border-left-color: #2196f3;
+        }
+
+        .theory p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+            font-size: 1.1em;
+        }
+
+        .formula {
+            background: #f0f9ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border: 2px solid #0ea5e9;
+            text-align: center;
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #0c4a6e;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 30px;
+            background: #f7fafc;
+            border-radius: 10px;
+            padding: 5px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px 20px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            color: #4a5568;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .input-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .input-field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-field label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #2d3748;
+            font-size: 1.1em;
+        }
+
+        .input-field input {
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1.1em;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-field input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(72, 187, 120, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(245, 101, 101, 0.4);
+        }
+
+        .animation-container {
+            background: #1a202c;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .track {
+            width: 100%;
+            height: 80px;
+            background: linear-gradient(90deg, #2d3748 0%, #4a5568 100%);
+            border-radius: 40px;
+            position: relative;
+            margin: 30px 0;
+            border: 3px solid #667eea;
+        }
+
+        .object {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ffa500 100%);
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            left: 20px;
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+            border: 3px solid white;
+            transition: left 0.1s linear;
+        }
+
+        .result {
+            background: linear-gradient(135deg, #e6fffa 0%, #f0fff4 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 20px;
+            border: 2px solid #48bb78;
+        }
+
+        .result h3 {
+            color: #22543d;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .calculation-steps {
+            background: #fafafa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .calculation-steps h4 {
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .step {
+            margin: 10px 0;
+            padding: 8px 12px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+        }
+
+        .info-panel {
+            background: linear-gradient(135deg, #fff5f5 0%, #fef5e7 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #f6ad55;
+        }
+
+        .info-panel h4 {
+            color: #c05621;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+
+        .status {
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            color: #2d3748;
+            border: 2px solid #cbd5e0;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translateY(-50%) scale(1); }
+            50% { transform: translateY(-50%) scale(1.1); }
+        }
+
+        .object.moving {
+            animation: pulse 0.5s infinite;
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, #fff2cd 0%, #fef5e7 100%);
+            padding: 3px 8px;
+            border-radius: 5px;
+            border: 1px solid #f6ad55;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Animasi Perhitungan GLB dan GLBB</h1>
+        
+        <!-- Materi Teori -->
+        <div class="section theory">
+            <h2>📚 Materi Dasar Gerak Lurus</h2>
+            <p><strong>Gerak Lurus Beraturan (GLB)</strong> adalah gerak benda pada lintasan lurus dengan kecepatan konstan. Pada GLB, benda menempuh jarak yang sama dalam selang waktu yang sama.</p>
+            
+            <div class="formula">s = v × t</div>
+            
+            <p>Dimana: s = jarak (m), v = kecepatan (m/s), t = waktu (s)</p>
+            
+            <p><strong>Gerak Lurus Berubah Beraturan (GLBB)</strong> adalah gerak benda pada lintasan lurus dengan percepatan konstan. Kecepatan benda berubah secara teratur setiap satuan waktu.</p>
+            
+            <div class="formula">s = v₀t + ½at²</div>
+            
+            <p>Dimana: s = jarak (m), v₀ = kecepatan awal (m/s), t = waktu (s), a = percepatan (m/s²)</p>
+            
+            <p>Jika kecepatan awal = 0, maka rumus menjadi: <span class="highlight">s = ½at²</span></p>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('glb')">GLB - Mencari Kecepatan</button>
+            <button class="tab" onclick="switchTab('glbb')">GLBB - Mencari Percepatan</button>
+        </div>
+
+        <!-- GLB Section -->
+        <div id="glb-content" class="tab-content active">
+            <div class="section">
+                <h2>🏃‍♂️ Gerak Lurus Beraturan (GLB)</h2>
+                
+                <div class="info-panel">
+                    <h4>📋 Informasi GLB</h4>
+                    <p>Pada GLB, kita akan menghitung kecepatan konstan dari data jarak dan waktu yang diketahui. Benda bergerak dengan kecepatan tetap tanpa percepatan.</p>
+                </div>
+
+                <div class="input-group">
+                    <div class="input-field">
+                        <label for="glb-distance">Jarak (s) dalam meter:</label>
+                        <input type="number" id="glb-distance" value="100" min="1">
+                    </div>
+                    <div class="input-field">
+                        <label for="glb-time">Waktu (t) dalam detik:</label>
+                        <input type="number" id="glb-time" value="10" min="0.1" step="0.1">
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="calculateGLB()">Hitung Kecepatan</button>
+                    <button class="btn btn-success" onclick="startGLBAnimation()">Mulai Animasi</button>
+                    <button class="btn btn-danger" onclick="stopGLBAnimation()">Stop Animasi</button>
+                </div>
+
+                <div class="animation-container">
+                    <div class="status" id="glb-status">Siap untuk simulasi GLB</div>
+                    <div class="track">
+                        <div class="object" id="glb-object"></div>
+                    </div>
+                </div>
+
+                <div id="glb-result" class="result" style="display: none;">
+                    <h3>📊 Hasil Perhitungan GLB</h3>
+                    <div id="glb-calculation"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GLBB Section -->
+        <div id="glbb-content" class="tab-content">
+            <div class="section">
+                <h2>🚗 Gerak Lurus Berubah Beraturan (GLBB)</h2>
+                
+                <div class="info-panel">
+                    <h4>📋 Informasi GLBB</h4>
+                    <p>Pada GLBB dengan kecepatan awal = 0, kita akan menghitung percepatan dari data jarak dan waktu. Benda mulai dari diam dan bergerak dengan percepatan konstan.</p>
+                </div>
+
+                <div class="input-group">
+                    <div class="input-field">
+                        <label for="glbb-distance">Jarak (s) dalam meter:</label>
+                        <input type="number" id="glbb-distance" value="50" min="1">
+                    </div>
+                    <div class="input-field">
+                        <label for="glbb-time">Waktu (t) dalam detik:</label>
+                        <input type="number" id="glbb-time" value="5" min="0.1" step="0.1">
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="calculateGLBB()">Hitung Percepatan</button>
+                    <button class="btn btn-success" onclick="startGLBBAnimation()">Mulai Animasi</button>
+                    <button class="btn btn-danger" onclick="stopGLBBAnimation()">Stop Animasi</button>
+                </div>
+
+                <div class="animation-container">
+                    <div class="status" id="glbb-status">Siap untuk simulasi GLBB</div>
+                    <div class="track">
+                        <div class="object" id="glbb-object"></div>
+                    </div>
+                </div>
+
+                <div id="glbb-result" class="result" style="display: none;">
+                    <h3>📊 Hasil Perhitungan GLBB</h3>
+                    <div id="glbb-calculation"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let glbAnimationId = null;
+        let glbbAnimationId = null;
+        let glbStartTime = null;
+        let glbbStartTime = null;
+
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName + '-content').classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+            
+            // Stop any running animations
+            stopGLBAnimation();
+            stopGLBBAnimation();
+        }
+
+        function calculateGLB() {
+            const distance = parseFloat(document.getElementById('glb-distance').value);
+            const time = parseFloat(document.getElementById('glb-time').value);
+            
+            if (distance <= 0 || time <= 0) {
+                alert('Masukkan nilai positif untuk jarak dan waktu!');
+                return;
+            }
+
+            const velocity = distance / time;
+
+            const resultDiv = document.getElementById('glb-result');
+            const calculationDiv = document.getElementById('glb-calculation');
+            
+            calculationDiv.innerHTML = `
+                <p><strong>Diketahui:</strong></p>
+                <ul style="margin-left: 20px; margin-bottom: 15px;">
+                    <li>Jarak (s) = ${distance} meter</li>
+                    <li>Waktu (t) = ${time} detik</li>
+                </ul>
+                
+                <p><strong>Ditanya:</strong> Kecepatan (v) = ?</p>
+                
+                <div class="calculation-steps">
+                    <h4>🔢 Langkah Perhitungan:</h4>
+                    <div class="step">Rumus GLB: s = v × t</div>
+                    <div class="step">Maka: v = s ÷ t</div>
+                    <div class="step">v = ${distance} ÷ ${time}</div>
+                    <div class="step">v = ${velocity.toFixed(2)} m/s</div>
+                </div>
+                
+                <p style="margin-top: 15px; font-size: 1.2em;"><strong>Hasil: Kecepatan = <span class="highlight">${velocity.toFixed(2)} m/s</span></strong></p>
+            `;
+            
+            resultDiv.style.display = 'block';
+        }
+
+        function calculateGLBB() {
+            const distance = parseFloat(document.getElementById('glbb-distance').value);
+            const time = parseFloat(document.getElementById('glbb-time').value);
+            
+            if (distance <= 0 || time <= 0) {
+                alert('Masukkan nilai positif untuk jarak dan waktu!');
+                return;
+            }
+
+            // Using s = 1/2 * a * t² (assuming initial velocity = 0)
+            const acceleration = (2 * distance) / (time * time);
+
+            const resultDiv = document.getElementById('glbb-result');
+            const calculationDiv = document.getElementById('glbb-calculation');
+            
+            calculationDiv.innerHTML = `
+                <p><strong>Diketahui:</strong></p>
+                <ul style="margin-left: 20px; margin-bottom: 15px;">
+                    <li>Jarak (s) = ${distance} meter</li>
+                    <li>Waktu (t) = ${time} detik</li>
+                    <li>Kecepatan awal (v₀) = 0 m/s (mulai dari diam)</li>
+                </ul>
+                
+                <p><strong>Ditanya:</strong> Percepatan (a) = ?</p>
+                
+                <div class="calculation-steps">
+                    <h4>🔢 Langkah Perhitungan:</h4>
+                    <div class="step">Rumus GLBB: s = v₀t + ½at²</div>
+                    <div class="step">Karena v₀ = 0, maka: s = ½at²</div>
+                    <div class="step">Maka: a = 2s ÷ t²</div>
+                    <div class="step">a = (2 × ${distance}) ÷ ${time}²</div>
+                    <div class="step">a = ${2 * distance} ÷ ${time * time}</div>
+                    <div class="step">a = ${acceleration.toFixed(2)} m/s²</div>
+                </div>
+                
+                <p style="margin-top: 15px; font-size: 1.2em;"><strong>Hasil: Percepatan = <span class="highlight">${acceleration.toFixed(2)} m/s²</span></strong></p>
+            `;
+            
+            resultDiv.style.display = 'block';
+        }
+
+        function startGLBAnimation() {
+            stopGLBAnimation(); // Stop any existing animation
+            
+            const distance = parseFloat(document.getElementById('glb-distance').value);
+            const time = parseFloat(document.getElementById('glb-time').value);
+            
+            if (distance <= 0 || time <= 0) {
+                alert('Hitung kecepatan terlebih dahulu!');
+                return;
+            }
+
+            const object = document.getElementById('glb-object');
+            const status = document.getElementById('glb-status');
+            const velocity = distance / time;
+            
+            object.style.left = '20px';
+            object.classList.add('moving');
+            status.textContent = `GLB - Kecepatan: ${velocity.toFixed(2)} m/s`;
+            
+            glbStartTime = Date.now();
+            const trackWidth = object.parentElement.offsetWidth - 60; // Account for object width and padding
+            const animationDuration = time * 1000; // Convert to milliseconds
+            
+            function animate() {
+                const elapsed = Date.now() - glbStartTime;
+                const progress = Math.min(elapsed / animationDuration, 1);
+                
+                // Linear movement for GLB
+                const position = 20 + (progress * trackWidth);
+                object.style.left = position + 'px';
+                
+                status.textContent = `GLB - Waktu: ${(elapsed/1000).toFixed(1)}s | Kecepatan: ${velocity.toFixed(2)} m/s`;
+                
+                if (progress < 1) {
+                    glbAnimationId = requestAnimationFrame(animate);
+                } else {
+                    object.classList.remove('moving');
+                    status.textContent = `GLB Selesai - Total waktu: ${time}s | Jarak: ${distance}m`;
+                }
+            }
+            
+            glbAnimationId = requestAnimationFrame(animate);
+        }
+
+        function stopGLBAnimation() {
+            if (glbAnimationId) {
+                cancelAnimationFrame(glbAnimationId);
+                glbAnimationId = null;
+            }
+            
+            const object = document.getElementById('glb-object');
+            const status = document.getElementById('glb-status');
+            
+            object.style.left = '20px';
+            object.classList.remove('moving');
+            status.textContent = 'Animasi GLB dihentikan';
+        }
+
+        function startGLBBAnimation() {
+            stopGLBBAnimation(); // Stop any existing animation
+            
+            const distance = parseFloat(document.getElementById('glbb-distance').value);
+            const time = parseFloat(document.getElementById('glbb-time').value);
+            
+            if (distance <= 0 || time <= 0) {
+                alert('Hitung percepatan terlebih dahulu!');
+                return;
+            }
+
+            const object = document.getElementById('glbb-object');
+            const status = document.getElementById('glbb-status');
+            const acceleration = (2 * distance) / (time * time);
+            
+            object.style.left = '20px';
+            object.classList.add('moving');
+            status.textContent = `GLBB - Percepatan: ${acceleration.toFixed(2)} m/s²`;
+            
+            glbbStartTime = Date.now();
+            const trackWidth = object.parentElement.offsetWidth - 60;
+            const animationDuration = time * 1000;
+            
+            function animate() {
+                const elapsed = Date.now() - glbbStartTime;
+                const progress = Math.min(elapsed / animationDuration, 1);
+                
+                // Quadratic movement for GLBB (s = 1/2 * a * t²)
+                const position = 20 + (progress * progress * trackWidth);
+                object.style.left = position + 'px';
+                
+                const currentTime = elapsed / 1000;
+                const currentVelocity = acceleration * currentTime;
+                
+                status.textContent = `GLBB - Waktu: ${currentTime.toFixed(1)}s | Kecepatan: ${currentVelocity.toFixed(1)} m/s | Percepatan: ${acceleration.toFixed(2)} m/s²`;
+                
+                if (progress < 1) {
+                    glbbAnimationId = requestAnimationFrame(animate);
+                } else {
+                    object.classList.remove('moving');
+                    const finalVelocity = acceleration * time;
+                    status.textContent = `GLBB Selesai - Total waktu: ${time}s | Jarak: ${distance}m | Kecepatan akhir: ${finalVelocity.toFixed(2)} m/s`;
+                }
+            }
+            
+            glbbAnimationId = requestAnimationFrame(animate);
+        }
+
+        function stopGLBBAnimation() {
+            if (glbbAnimationId) {
+                cancelAnimationFrame(glbbAnimationId);
+                glbbAnimationId = null;
+            }
+            
+            const object = document.getElementById('glbb-object');
+            const status = document.getElementById('glbb-status');
+            
+            object.style.left = '20px';
+            object.classList.remove('moving');
+            status.textContent = 'Animasi GLBB dihentikan';
+        }
+
+        // Initialize with GLB calculation
+        calculateGLB();
+    </script>
+</body>
+</html>
